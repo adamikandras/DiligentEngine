@@ -43,7 +43,8 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 * [Atmospheric light scattering post-effect](https://github.com/DiligentGraphics/DiligentFX/tree/master/Postprocess/EpipolarLightScattering)
 * [Tone mapping utilities](https://github.com/DiligentGraphics/DiligentFX/tree/master/Shaders/PostProcess/ToneMapping/public)
 * [Physically-based GLTF2.0 renderer](https://github.com/DiligentGraphics/DiligentFX/tree/master/GLTF_PBR_Renderer)
-
+* [Shadows](https://github.com/DiligentGraphics/DiligentFX/tree/master/Components#shadows)
+* [Integration with Dear Imgui](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/ImguiDemo)
 
 ## Supported Plaforms and Low-Level Graphics APIs
 
@@ -123,8 +124,9 @@ Master repository includes the following submodules:
 # Build and Run Instructions
 
 Diligent Engine uses [CMake](https://cmake.org/) as a cross-platform build tool. 
-To start using cmake, download the [latest release](https://cmake.org/download/) (3.13 or later is required).
+To start using cmake, download the [latest release](https://cmake.org/download/) (3.15 or later is required).
 Another build prerequisite is [Python interpreter](https://www.python.org/downloads/) (3.0 or later is required).
+If after following the instuctions below you have build/run issues, please take a look at [troubleshooting](Troubleshooting.md).
 
 <a name="build_and_run_win32"></a>
 ## Win32
@@ -134,13 +136,13 @@ To generate build files for Windows desktop platform, use either CMake GUI or co
 navigate to the engine's root folder and run the following command:
 
 ```
-cmake -S . -B ./build/Win64 -G "Visual Studio 15 2017 Win64"
+cmake -S . -B ./build/Win64 -G "Visual Studio 15 2017" -A x64
 ```
 
 You can generate Win32 solution that targets Win8.1 SDK using the following command:
 
 ```
-cmake -D CMAKE_SYSTEM_VERSION=8.1 -S . -B ./build/Win64 -G "Visual Studio 15 2017 Win64"
+cmake -D CMAKE_SYSTEM_VERSION=8.1 -S . -B ./build/Win64_8.1 -G "Visual Studio 15 2017" -A x64
 ```
 
 If you use MinGW, you can generate the make files using the command below (please be aware of some [known build issues](https://github.com/DiligentGraphics/DiligentEngine/issues/31)):
@@ -177,13 +179,13 @@ For example, to generate Visual Studio 2017 64-bit solution and project files in
 from the engine's root folder:
 
 ```
-cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0 -S . -B ./build/UWP64 -G "Visual Studio 15 2017 Win64"
+cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0 -S . -B ./build/UWP64 -G "Visual Studio 15 2017" -A x64
 ```
 
 You can target specific SDK version by refining CMAKE_SYSTEM_VERSION, for instance:
 
 ```
-cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0.16299.0 -S . -B ./build/UWP64 -G "Visual Studio 15 2017 Win64"
+cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0.16299.0 -S . -B ./build/UWP64 -G "Visual Studio 15 2017" -A x64
 ```
 
 Set the desired project as startup project (by default, GLTF Viewer will be selected) and run it. 
@@ -251,8 +253,11 @@ the app's assets folder must be current directory.
 ## Android
 
 Please make sure that your machine is set up for Android development. Download 
-[Android Studio](https://developer.android.com/studio/index.html), [Android NDK](https://developer.android.com/ndk/downloads/index.html) and
-other required tools. To verify that your environment is properly set up, try building 
+[Android Studio](https://developer.android.com/studio/index.html),
+[install and configure the NDK and CMake](https://developer.android.com/studio/projects/install-ndk)
+and other required tools. If you are not using CMake version bundled with Android Studio, make sure
+your build files are [properly configured](https://developer.android.com/studio/projects/add-native-code.html#use_a_custom_cmake_version).
+To verify that your environment is properly set up, try building the
 [teapots sample](https://github.com/googlesamples/android-ndk/tree/master/teapots).
 
 Open *DiligentSamples/Android* or *UnityPlugin/Android* folders with Android Studio to build and run
@@ -400,7 +405,7 @@ to `/usr/local` on UNIX and `c:/Program Files/${PROJECT_NAME}` on Windows, which
 Use `-D CMAKE_INSTALL_PREFIX=install` to use local `install` folder instead:
 
 ```
-cmake -S . -B ./build/Win64 -D CMAKE_INSTALL_PREFIX=install -G "Visual Studio 15 2017 Win64"
+cmake -S . -B ./build/Win64 -D CMAKE_INSTALL_PREFIX=install -G "Visual Studio 15 2017" -A x64
 ```
 
 To install libraries and header files, run the following CMake command from the build folder:
@@ -441,7 +446,7 @@ use the following options: `DILIGENT_NO_DIRECT3D11`, `DILIGENT_NO_DIRECT3D12`, `
 The options can be set through cmake UI or from the command line as in the example below:
 
 ```
-cmake -D DILIGENT_NO_DIRECT3D11=TRUE -S . -B ./build/Win64 -G "Visual Studio 15 2017 Win64"
+cmake -D DILIGENT_NO_DIRECT3D11=TRUE -S . -B ./build/Win64 -G "Visual Studio 15 2017" -A x64
 ```
 
 Additionally, individual engine components can be enabled or disabled using the following options:
@@ -466,7 +471,7 @@ The path to the configuration script should be provided through `BUILD_CONFIGURA
 cmake and must be relative to the cmake root folder, for example:
 
 ```
-cmake -D BUILD_CONFIGURATION_FILE=BuildConfig.cmake -S . -B ./build/Win64 -G "Visual Studio 15 2017 Win64"
+cmake -D BUILD_CONFIGURATION_FILE=BuildConfig.cmake -S . -B ./build/Win64 -G "Visual Studio 15 2017" -A x64
 ```
 
 ### Customizing global build settings with custom_configure_build() function
@@ -580,7 +585,7 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 | [13 - Shadow Map](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial13_ShadowMap) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial13_ShadowMap/Animation_Small.gif) | This tutorial demonstrates how to render basic shadows using a shadow map. |
 | [14 - Compute Shader](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial14_ComputeShader) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial14_ComputeShader/Animation_Small.gif) | This tutorial shows how to implement a simple particle simulation system using compute shaders. |
 | [15 - Multiple Windows](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial15_MultipleWindows) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial15_MultipleWindows/Screenshot.png) | This tutorial demonstrates how to use Diligent Engine to render to multiple windows. |
-
+| [16 - Bindless Resources](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial16_BindlessResources) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial16_BindlessResources/Animation_Small.gif) | This tutorial shows how to implement bindless resources, a technique that leverages dynamic shader resource indexing feature enabled by the next-gen APIs to significantly improve rendering performance. |
 
 <a name="samples"></a>
 # [Samples](https://github.com/DiligentGraphics/DiligentSamples)
