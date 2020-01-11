@@ -145,7 +145,6 @@ public:
         DXGI_SWAP_CHAIN_DESC1 SwapChainDesc;
         pDXGISwapChain->GetDesc1(&SwapChainDesc);
         m_SwapChainDesc.BufferCount = SwapChainDesc.BufferCount;
-        m_SwapChainDesc.SamplesCount = SwapChainDesc.SampleDesc.Count;
         m_SwapChainDesc.Width = SwapChainDesc.Width;
         m_SwapChainDesc.Height = SwapChainDesc.Height;
         m_SwapChainDesc.ColorBufferFormat = DXGI_FormatToTexFormat(SwapChainDesc.Format);
@@ -220,7 +219,6 @@ void DiligentGraphicsAdapterD3D12::InitProxySwapChain()
     auto ProxySwapChain = NEW_RC_OBJ(DefaultAllocator, "UnityCommandQueueImpl instance", ProxySwapChainD3D12)(m_pDevice, m_pDeviceCtx, SCDesc);
     ProxySwapChain->CreateBuffers(GraphicsImpl->GetDXGISwapChain(), GraphicsImpl->GetDepthBuffer());
     m_pProxySwapChain = ProxySwapChain;
-    m_pDeviceCtx->SetSwapChain(ProxySwapChain);
 }
 
 void DiligentGraphicsAdapterD3D12::PreSwapChainResize()

@@ -127,16 +127,13 @@ void DiligentGraphicsAdapterD3D11::InitProxySwapChain()
     SCDesc.DepthBufferFormat = DXGI_FormatToTexFormat(DSVDesc.Format);
     SCDesc.Width = GraphicsD3D11Impl->GetBackBufferWidth();
     SCDesc.Height = GraphicsD3D11Impl->GetBackBufferHeight();
-    // These fields are irrelevant
-    SCDesc.SamplesCount = 0;
+    // This field is irrelevant
     SCDesc.BufferCount = 0;
 
     auto &DefaultAllocator = DefaultRawMemoryAllocator::GetAllocator();
     auto pProxySwapChainD3D11 = NEW_RC_OBJ(DefaultAllocator, "ProxySwapChainD3D11 instance", ProxySwapChainD3D11)(m_pDevice, m_pDeviceCtx, SCDesc);
     pProxySwapChainD3D11->QueryInterface(IID_SwapChain, reinterpret_cast<IObject**>(static_cast<ISwapChain**>(&m_pProxySwapChain)));
     pProxySwapChainD3D11->CreateViews(pBackBufferRTV, pDepthBufferDSV);
-
-    m_pDeviceCtx->SetSwapChain(m_pProxySwapChain);
 }
 
 void DiligentGraphicsAdapterD3D11::BeginFrame()

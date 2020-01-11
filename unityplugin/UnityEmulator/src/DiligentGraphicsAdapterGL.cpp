@@ -9,6 +9,8 @@
 
 #include "UnityGraphicsGL_Impl.h"
 #include "SwapChainGL.h"
+#include "RenderDeviceGL.h"
+#include "DeviceContextGL.h"
 
 using namespace Diligent;
 
@@ -27,8 +29,10 @@ public:
                       const SwapChainDesc& SCDesc ) : 
         TBase(pRefCounters, pDevice, pDeviceContext,SCDesc),
         m_UnityGraphicsGL(UnityGraphicsGL)
-    {}
-        
+    {
+        CreateDummyBuffers();
+    }
+
     virtual void Present(Uint32 SyncInterval)override final
     {
         UNEXPECTED("Present is not expected to be called directly");
@@ -46,19 +50,49 @@ public:
 
     virtual void Resize(Uint32 NewWidth, Uint32 NewHeight)override final
     {
-        TBase::Resize(NewWidth, NewHeight, 0);
+        if (TBase::Resize(NewWidth, NewHeight, 0))
+        {
+            CreateDummyBuffers();
+        }
     }
 
     virtual GLuint GetDefaultFBO()const override final
     {
         return m_UnityGraphicsGL.GetGraphicsImpl()->GetDefaultFBO();
     }
-    
-    virtual ITextureView* GetCurrentBackBufferRTV()override final{return nullptr;}
-    virtual ITextureView* GetDepthBufferDSV()override final{return nullptr;}
+
+    virtual ITextureView* GetCurrentBackBufferRTV()override final{return m_pRTV;}
+    virtual ITextureView* GetDepthBufferDSV()override final{return m_pDSV;}
 
 private:
+    void CreateDummyBuffers()
+    {
+        if (m_SwapChainDesc.Width == 0 || m_SwapChainDesc.Height == 0)
+            return;
+
+        TextureDesc DummyTexDesc;
+        DummyTexDesc.Name      = "Back buffer proxy";
+        DummyTexDesc.Type      = RESOURCE_DIM_TEX_2D;
+        DummyTexDesc.Format    = m_SwapChainDesc.ColorBufferFormat;
+        DummyTexDesc.Width     = m_SwapChainDesc.Width;
+        DummyTexDesc.Height    = m_SwapChainDesc.Height;
+        DummyTexDesc.BindFlags = BIND_RENDER_TARGET;
+        RefCntAutoPtr<IRenderDeviceGL> pDeviceGL(m_pRenderDevice, IID_RenderDeviceGL);
+        RefCntAutoPtr<ITexture> pDummyRenderTarget;
+        pDeviceGL->CreateDummyTexture(DummyTexDesc, RESOURCE_STATE_RENDER_TARGET, &pDummyRenderTarget);
+        m_pRTV = pDummyRenderTarget->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
+
+        DummyTexDesc.Name      = "Depth buffer proxy";
+        DummyTexDesc.Format    = m_SwapChainDesc.DepthBufferFormat;
+        DummyTexDesc.BindFlags = BIND_DEPTH_STENCIL;
+        RefCntAutoPtr<ITexture> pDummyDepthBuffer;
+        pDeviceGL->CreateDummyTexture(DummyTexDesc, RESOURCE_STATE_DEPTH_WRITE, &pDummyDepthBuffer);
+        m_pDSV = pDummyDepthBuffer->GetDefaultView(TEXTURE_VIEW_DEPTH_STENCIL);
+    }
+
     const UnityGraphicsGLCoreES_Emulator& m_UnityGraphicsGL;
+    RefCntAutoPtr<ITextureView> m_pRTV;
+    RefCntAutoPtr<ITextureView> m_pDSV;
 };
 
 }
@@ -96,15 +130,14 @@ DiligentGraphicsAdapterGL::DiligentGraphicsAdapterGL(const UnityGraphicsGLCoreES
 
     SCDesc.Width = UnityGraphicsGLImpl->GetBackBufferWidth();
     SCDesc.Height = UnityGraphicsGLImpl->GetBackBufferHeight();
-    // These fields are irrelevant
-    SCDesc.SamplesCount = 0;
+    // This field is irrelevant
     SCDesc.BufferCount = 0;
 
     auto &DefaultAllocator = DefaultRawMemoryAllocator::GetAllocator();
     auto pProxySwapChainGL = NEW_RC_OBJ(DefaultAllocator, "ProxySwapChainGL instance", ProxySwapChainGL)(m_UnityGraphicsGL, m_pDevice, m_pDeviceCtx, SCDesc);
     pProxySwapChainGL->QueryInterface(IID_SwapChain, reinterpret_cast<IObject**>(static_cast<ISwapChain**>(&m_pProxySwapChain)));
 
-    m_pDeviceCtx->SetSwapChain(m_pProxySwapChain);
+    RefCntAutoPtr<IDeviceContextGL>(m_pDeviceCtx, IID_DeviceContextGL)->SetSwapChain(pProxySwapChainGL);
 }
 
 void DiligentGraphicsAdapterGL::BeginFrame()

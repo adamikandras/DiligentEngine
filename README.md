@@ -13,6 +13,7 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 [![Chat on gitter](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/diligent-engine)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/DiligentGraphics/DiligentEngine?svg=true)](https://ci.appveyor.com/project/DiligentGraphics/diligentengine)
 [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/978eebabb2fc438f9d736443b71127aa)](https://www.codacy.com/manual/DiligentGraphics/DiligentEngine?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DiligentGraphics/DiligentEngine&amp;utm_campaign=Badge_Grade)
 
 ## Features
 
@@ -36,15 +37,20 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
   * Descriptor and memory management
   * Shader resource reflection
 * Extensive validation and error reporting
-* Modern c++ features to make code fast and reliable
+* Modern c++ features to make the code fast and reliable
+* Consistent high quality is ensured by continuous integration
+  * Automated builds and unit testing
+  * Source code formatting validation
+  * Static analysis
 
 ## High-level Rendering components
 
-* [Atmospheric light scattering post-effect](https://github.com/DiligentGraphics/DiligentFX/tree/master/Postprocess/EpipolarLightScattering)
+* [Atmospheric light scattering post-effect](https://github.com/DiligentGraphics/DiligentFX/tree/master/PostProcess/EpipolarLightScattering)
 * [Tone mapping utilities](https://github.com/DiligentGraphics/DiligentFX/tree/master/Shaders/PostProcess/ToneMapping/public)
 * [Physically-based GLTF2.0 renderer](https://github.com/DiligentGraphics/DiligentFX/tree/master/GLTF_PBR_Renderer)
 * [Shadows](https://github.com/DiligentGraphics/DiligentFX/tree/master/Components#shadows)
 * [Integration with Dear Imgui](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/ImguiDemo)
+  [and Nuklear](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/NuklearDemo)
 
 ## Supported Plaforms and Low-Level Graphics APIs
 
@@ -59,7 +65,7 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 
 # Table of Contents
 
-- [Clonning the Repository](#clonning)
+- [Cloning the Repository](#cloning)
   - [Repository Structure](#repository_structure)
 - [Build and Run Instructions](#build_and_run)
   - [Win32](#build_and_run_win32)
@@ -81,7 +87,7 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 - [References](#references)
 - [Release History](#release_history)
 
-<a name="clonning"></a>
+<a name="cloning"></a>
 # Cloning the Repository
 
 This is the master repository that contains four [submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). To get the repository and all submodules, use the following command:
@@ -111,14 +117,14 @@ Master repository includes the following submodules:
   [Vulkan](https://github.com/DiligentGraphics/DiligentCore/tree/master/Graphics/GraphicsEngineVulkan) back-ends.
   The module is self-contained and can be built by its own.
 * [Tools](https://github.com/DiligentGraphics/DiligentTools) submodule contains 
-  [texture loading library](https://github.com/DiligentGraphics/DiligentTools/tree/master/TextureLoader) and 
-  [Render Script](https://github.com/DiligentGraphics/DiligentTools/tree/master/RenderScript), a Lua-based run-time 
-  graphics resource managing system. Tools module depends on Core module.
+  [texture loading library](https://github.com/DiligentGraphics/DiligentTools/tree/master/TextureLoader),
+  [asset loading library](https://github.com/DiligentGraphics/DiligentTools/blob/master/AssetLoader),
+  [dear imgui implementation](https://github.com/DiligentGraphics/DiligentTools/blob/master/Imgui), and
+  [native application implementation](https://github.com/DiligentGraphics/DiligentTools/blob/master/NativeApp).
 * [DiligentFX](https://github.com/DiligentGraphics/DiligentFX) is a high-level rendering framework that implements
   various rendering components. The module depends on Core and Tools modules.
-* [Samples](https://github.com/DiligentGraphics/DiligentSamples) submodule contains several simple graphics applications 
+* [Samples](https://github.com/DiligentGraphics/DiligentSamples) submodule contains tutorials and sample applications 
   intended to demonstrate the usage of the Diligent Engine API. The module depends on Core, Tools and DiligentFX modules.
-  
 
 <a name="build_and_run"></a>
 # Build and Run Instructions
@@ -281,7 +287,8 @@ The project will be located in `build/MacOS` folder.
 By default there is no Vulkan implementation on MacOS. Diligent Engine links against Vulkan loader
 and can use a Vulkan Portability implementation such as [MoltenVK](https://github.com/KhronosGroup/MoltenVK)
 or [gfx-portability](https://github.com/gfx-rs/portability). Install [VulkanSDK](https://vulkan.lunarg.com/sdk/home#mac)
-and make sure that your system is properly configured as described [here](https://vulkan.lunarg.com/doc/sdk/latest/mac/getting_started.html).
+and make sure that your system is properly configured as described
+[here](https://vulkan.lunarg.com/doc/view/latest/mac/getting_started.html#user-content-command-line).
 In particular, you may need to define the following environment variables (assuming that Vulkan SDK is installed at
 `~/LunarG/vulkansdk-macos` and you want to use MoltenVK):
 
@@ -345,6 +352,22 @@ for more details.
 <a name="build_and_run_integration"></a>
 ## Integrating Diligent Engine with Existing Build System
 
+Diligent has modular structure, so for your project you can only use these 
+submodules that implement the required functionality.
+The diagram below shows the dependencies between modules.
+
+```
+  Core
+   |
+   +------>Tools----------.
+   |        |             |
+   |        V             |
+   +------->FX---------.  |
+   |                   |  |
+   |                   V  V
+   '----------------->Samples
+```
+
 ### Your Project Uses Cmake
 
 If your project uses CMake, adding Diligent Engine requires just few lines of code. 
@@ -398,11 +421,10 @@ Please also take a look at getting started tutorials for
 If your project doesn't use CMake, it is recommended to build libraries with CMake and add them to your build system.
 For Windows platforms, you can download the latest build artifacts from [appveyor](https://ci.appveyor.com/project/DiligentGraphics/diligentcore).
 
-Global CMake installation directory is controlled by `CMAKE_INTALL_PREFIX` variable. Within that directory,
-`DILIGENT_CORE_INSTALL_DIR` defines the subdirectory where libraries and headers are installed.
-Note that [CMAKE_INTALL_PREFIX](https://cmake.org/cmake/help/v3.13/variable/CMAKE_INSTALL_PREFIX.html) defaults
-to `/usr/local` on UNIX and `c:/Program Files/${PROJECT_NAME}` on Windows, which may not be what you want.
-Use `-D CMAKE_INSTALL_PREFIX=install` to use local `install` folder instead:
+Global CMake installation directory is controlled by
+[CMAKE_INTALL_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html) variable. 
+Note that it defaults to `/usr/local` on UNIX and `c:/Program Files/${PROJECT_NAME}` on Windows, which may not
+be what you want. Use `-D CMAKE_INSTALL_PREFIX=install` to use local `install` folder instead:
 
 ```
 cmake -S . -B ./build/Win64 -D CMAKE_INSTALL_PREFIX=install -G "Visual Studio 15 2017" -A x64
@@ -416,7 +438,7 @@ cmake --build . --target install
 
 DiligentCore installation directory will contain everything required to integrate the engine:
 
-* *headers* subdirectory will contain all required header files. Add this directory to your include search directories.
+* *include* subdirectory will contain all required header files. Add this directory to your include search directories.
 * *lib* subdirectory will contain static libraries.
 * *bin* subdirectory will contain dynamic libraries.
 
@@ -428,10 +450,13 @@ For example, for Windows platform, the list of libraries your project will need 
 DiligentCore.lib glslang.lib HLSL.lib OGLCompiler.lib OSDependent.lib spirv-cross-core.lib SPIRV.lib SPIRV-Tools-opt.lib SPIRV-Tools.lib glew-static.lib vulkan-1.lib dxgi.lib d3d11.lib d3d12.lib d3dcompiler.lib opengl32.lib
 ```
 
-Vulkan libraries can be found in [DiligentCore/External/vulkan/libs](https://github.com/DiligentGraphics/DiligentCore/tree/master/External/vulkan/libs) directory.
+Vulkan libraries can be found in [DiligentCore/ThirdParty/vulkan/libs](https://github.com/DiligentGraphics/DiligentCore/tree/master/ThirdParty/vulkan/libs) directory.
 
 Diligent Engine headers require one of the following platform macros to be defined as `1`:
 `PLATFORM_WIN32`, `PLATFORM_UNIVERSAL_WINDOWS`, `PLATFORM_ANDROID`, `PLATFORM_LINUX`, `PLATFORM_MACOS`, `PLATFORM_IOS`.
+
+You can control which components of the engine you want to install using the following CMake options:
+`DILIGENT_INSTALL_CORE`, `DILIGENT_INSTALL_FX`, `DILIGENT_INSTALL_SAMPLES`, and `DILIGENT_INSTALL_TOOLS`.
 
 Another way to intergrate the engine is to generate build files (such as Visual Studio projects) and add them to your
 build system. Build customization described below can help tweak the settings for your specific needs.
@@ -450,8 +475,9 @@ cmake -D DILIGENT_NO_DIRECT3D11=TRUE -S . -B ./build/Win64 -G "Visual Studio 15 
 ```
 
 Additionally, individual engine components can be enabled or disabled using the following options:
-`DILIGENT_BUILD_FX`, `DILIGENT_BUILD_SAMPLES`, `DILIGENT_BUILD_DEMOS`, `DILIGENT_BUILD_UNITY_PLUGIN`,
-`DILIGENT_BUILD_RENDER_SCRIPT`.
+`DILIGENT_BUILD_TOOLS`, `DILIGENT_BUILD_FX`, `DILIGENT_BUILD_SAMPLES`, `DILIGENT_BUILD_DEMOS`,
+`DILIGENT_BUILD_UNITY_PLUGIN`. If you only want to build `SampleBase` project,
+ you can use `DILIGENT_BUILD_SAMPLE_BASE_ONLY` option.
 
 By default Vulkan back-end is linked with glslang that enables compiling HLSL and GLSL shaders to SPIRV at run time.
 If run-time compilation is not required, glslang can be disabled with `DILIGENT_NO_GLSLANG` cmake option. This will significantly 
@@ -462,7 +488,7 @@ reduce the size of the Vulkan back-end binary.
 ## Customizing Build
 
 Diligent Engine allows clients to customize build settings by providing configuration script file that defines two optional 
-[cmake functions](https://cmake.org/cmake/help/v3.13/command/function.html):
+[cmake functions](https://cmake.org/cmake/help/latest/command/function.html):
 
 * `custom_configure_build()` - defines global build properties such as build configurations, c/c++ compile flags, link flags etc.
 * `custom_configure_target()` - defines custom settings for every target in the build.
@@ -542,7 +568,7 @@ allows configuring target-specific properties.
 
 By default, the build system sets some target properties. If `custom_configure_target()` sets all required properties,
 it can tell the build system that no further processing is required by setting `TARGET_CONFIGURATION_COMPLETE`
-[parent scope](https://cmake.org/cmake/help/v3.13/command/set.html#set-normal-variable) variable to `TRUE`:
+[parent scope](https://cmake.org/cmake/help/latest/command/set.html#set-normal-variable) variable to `TRUE`:
 
 ```cmake
 set(TARGET_CONFIGURATION_COMPLETE TRUE PARENT_SCOPE)
@@ -586,16 +612,18 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 | [14 - Compute Shader](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial14_ComputeShader) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial14_ComputeShader/Animation_Small.gif) | This tutorial shows how to implement a simple particle simulation system using compute shaders. |
 | [15 - Multiple Windows](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial15_MultipleWindows) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial15_MultipleWindows/Screenshot.png) | This tutorial demonstrates how to use Diligent Engine to render to multiple windows. |
 | [16 - Bindless Resources](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial16_BindlessResources) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial16_BindlessResources/Animation_Small.gif) | This tutorial shows how to implement bindless resources, a technique that leverages dynamic shader resource indexing feature enabled by the next-gen APIs to significantly improve rendering performance. |
+| [17 - MSAA](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial17_MSAA) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial17_MSAA/Animation_Small.gif) | This tutorial demonstrates how to use multisample anti-aliasing (MSAA) to make geometrical edges look smoother and more temporarily stable. |
 
 <a name="samples"></a>
 # [Samples](https://github.com/DiligentGraphics/DiligentSamples)
 
 | Sample     | Screenshot  | Description          |
 |------------|-------------|----------------------|
-| [Atmosphere Sample](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/Atmosphere) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/Atmosphere/Animation_Small.gif) | This sample demonstrates how to integrate [Epipolar Light Scattering](https://github.com/DiligentGraphics/DiligentFX/tree/master/Postprocess/EpipolarLightScattering) post-processing effect into an application to render physically-based atmosphere. |
+| [Atmosphere Sample](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/Atmosphere) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/Atmosphere/Animation_Small.gif) | This sample demonstrates how to integrate [Epipolar Light Scattering](https://github.com/DiligentGraphics/DiligentFX/tree/master/PostProcess/EpipolarLightScattering) post-processing effect into an application to render physically-based atmosphere. |
 | [GLTF Viewer](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/GLTFViewer) | <img src="https://github.com/DiligentGraphics/DiligentFX/blob/master/GLTF_PBR_Renderer/screenshots/flight_helmet.jpg" width=240> | This sample demonstrates how to use the [Asset Loader](https://github.com/DiligentGraphics/DiligentTools/tree/master/AssetLoader) and [GLTF PBR Renderer](https://github.com/DiligentGraphics/DiligentFX/tree/master/GLTF_PBR_Renderer) to load and render GLTF models. |
 | [Shadows](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/Shadows) | <img src="https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/Shadows/Screenshot.jpg" width=240> | This sample demonstrates how to use the [Shadowing component](https://github.com/DiligentGraphics/DiligentFX/tree/master/Components#shadows) to render high-quality shadows. |
 | [Dear ImGui Demo](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/ImguiDemo) | <img src="https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/ImguiDemo/Screenshot.png" width=240> | This sample demonstrates the integration of the engine with [dear imgui](https://github.com/ocornut/imgui) UI library. |
+| [Nuklear Demo](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/NuklearDemo) | <img src="https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/NuklearDemo/Screenshot.png" width=240> | This sample demonstrates the integration of the engine with [nuklear](https://github.com/vurtun/nuklear) UI library. |
 
 <a name="demos"></a>
 # Demos
@@ -611,8 +639,8 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 High-level rendering functionality is implemented by [DiligentFX module](https://github.com/DiligentGraphics/DiligentFX).
 The following components are now available:
 
-* [Epipolar light scattering post-effect](https://github.com/DiligentGraphics/DiligentFX/tree/master/Postprocess/EpipolarLightScattering)
-<img src="https://github.com/DiligentGraphics/DiligentFX/blob/master/Postprocess/EpipolarLightScattering/media/LightScattering.png" width=240>
+* [Epipolar light scattering post-effect](https://github.com/DiligentGraphics/DiligentFX/tree/master/PostProcess/EpipolarLightScattering)
+<img src="https://github.com/DiligentGraphics/DiligentFX/blob/master/PostProcess/EpipolarLightScattering/media/LightScattering.png" width=240>
 
 * [Tone mapping shader utilities](https://github.com/DiligentGraphics/DiligentFX/tree/master/Shaders/PostProcess/ToneMapping/public)
 
@@ -656,7 +684,6 @@ This project has some third-party dependencies, each of which may have independe
   * [libtiff](http://www.libtiff.org/): TIFF Library and Utilities.
   * [libpng](http://www.libpng.org/pub/png/libpng.html): Official PNG reference library.
   * [zlib](https://zlib.net/): A compression library.
-  * [lua](https://www.lua.org/): Lua programming language run time.
   * [tinygltf](https://github.com/syoyo/tinygltf): A header only C++11 glTF 2.0 library.
   * [dear imgui](https://github.com/ocornut/imgui): A bloat-free immediate mode graphical user interface library.
 
@@ -669,6 +696,11 @@ to this repository. **Diligent Engine** is licensed under the [Apache 2.0 licens
 that code in the **DiligentEngine** repository is free of Intellectual Property encumbrances. In submitting code to
 this repository, you are agreeing that the code is free of any Intellectual Property claims.  
 
+Diligent Engine uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to ensure
+consistent source code style throught the code base. The format is validated by appveyor and travis
+for each commit and pull request, and the build will fail if any code formatting issue is found. Please refer
+to [this page](https://github.com/DiligentGraphics/DiligentCore/blob/master/doc/code_formatting.md) for instructions
+on how to set up clang-format and automatic code formatting.
 
 <a name="references"></a>
 # References
