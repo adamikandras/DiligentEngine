@@ -26,8 +26,10 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 * Modular design
   * Components are clearly separated logically and physically and can be used as needed
   * Only take what you need for your project
-* Clear object-based interface
-  * No hidden global states
+* Clear and concise API
+  * C/C++
+  * Object-based
+  * Stateless
 * Key graphics features:
   * [Automatic shader resource binding](http://diligentgraphics.com/2016/03/23/resource-binding-model-in-diligent-engine-2-0/) designed to leverage next-generation graphics APIs
   * Multithreaded command buffer generation
@@ -230,6 +232,7 @@ sudo apt-get install libx11-dev
 sudo apt-get install mesa-common-dev
 sudo apt-get install mesa-utils
 sudo apt-get install libgl-dev
+sudo apt-get install python3-distutils
 ```
 
 To configure Vulkan you will also need to:
@@ -599,6 +602,7 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 | [01 - Hello Triangle](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial01_HelloTriangle) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial01_HelloTriangle/Screenshot.png) | This tutorial shows how to render simple triangle using Diligent Engine API. |
 | [02 - Cube](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial02_Cube) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial02_Cube/Animation_Small.gif) | This tutorial demonstrates how to render an actual 3D object, a cube. It shows how to load shaders from files, create and use vertex, index and uniform buffers. |
 | [03 - Texturing](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial03_Texturing) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial03_Texturing/Animation_Small.gif) | This tutorial demonstrates how to apply a texture to a 3D object. It shows how to load a texture from file, create shader resource binding object and how to sample a texture in the shader. |
+| [03 - Texturing-C](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial03_Texturing-C) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial03_Texturing/Animation_Small.gif) | This tutorial is identical to Tutorial03, but is implemented using C API. |
 | [04 - Instancing](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial04_Instancing) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial04_Instancing/Animation_Small.gif) | This tutorial demonstrates how to use instancing to render multiple copies of one object using unique transformation matrix for every copy. |
 | [05 - Texture Array](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial05_TextureArray) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial05_TextureArray/Animation_Small.gif) | This tutorial demonstrates how to combine instancing with texture arrays to use unique texture for every instance. |
 | [06 - Multithreading](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial06_Multithreading) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial06_Multithreading/Animation_Small.gif) | This tutorial shows how to generate command lists in parallel from multiple threads. |
@@ -613,6 +617,7 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 | [15 - Multiple Windows](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial15_MultipleWindows) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial15_MultipleWindows/Screenshot.png) | This tutorial demonstrates how to use Diligent Engine to render to multiple windows. |
 | [16 - Bindless Resources](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial16_BindlessResources) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial16_BindlessResources/Animation_Small.gif) | This tutorial shows how to implement bindless resources, a technique that leverages dynamic shader resource indexing feature enabled by the next-gen APIs to significantly improve rendering performance. |
 | [17 - MSAA](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial17_MSAA) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial17_MSAA/Animation_Small.gif) | This tutorial demonstrates how to use multisample anti-aliasing (MSAA) to make geometrical edges look smoother and more temporarily stable. |
+| [18 - Queries](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial18_Queries) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial18_Queries/Animation_Small.gif) | This tutorial demonstrates how to use queries to retrieve various information about the GPU operation, such as the number of primitives rendered, command processing duration, etc. |
 
 <a name="samples"></a>
 # [Samples](https://github.com/DiligentGraphics/DiligentSamples)

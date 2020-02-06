@@ -3,6 +3,7 @@
 
 ### API Changes
 
+* Added Queries (API Version 240051)
 * Added `AdapterType` member to `DeviceCaps` struct (API Version 240048)
 * Added `IDeviceContextGL::SetSwapChain` and `IRenderDeviceGL::CreateDummyTexture` methods (API Version 240047)
 * Removed `IDeviceContext::SetSwapChain` method (API Version 240046)
@@ -32,10 +33,11 @@
 
 ### General
 
-* Enabled automatic format validation, unit testing and static code analysis
+* Enabled automated unit testing, format validation and static code analysis
 * Added [Tutorial16 - Bindless Resources](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial16_BindlessResources)
 * Added [Tutorial17 - MSAA](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial17_MSAA)
-* Reomoved RenderScript and Lua
+* Added [Tutorial18 - Queries](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial18_Queries)
+* Removed RenderScript and Lua
 
 ## v2.4.c
 
